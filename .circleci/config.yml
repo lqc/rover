@@ -115,10 +115,10 @@ commands:
                 command: npm i -g npm@<< parameters.npm_version >>
             - run:
                 name: Assert Node.js version
-                command: test "$(node --version)" = "v${NODE_VERSION}"
+                command: test "$(node --version)" = "v<< parameters.node_version >>"
             - run:
                 name: Assert npm version
-                command: test "$(npm --version)" = "${NPM_VERSION}"
+                command: test "$(npm --version)" = "<< parameters.npm_version >>"
 
   install_rust_toolchain:
     parameters:
