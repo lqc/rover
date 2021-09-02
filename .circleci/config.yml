@@ -4,7 +4,6 @@ version: 2.1
 orbs:
   rust: circleci/rust@1.5.0
   gh: circleci/github-cli@1.0.4
-  node: circleci/node@4.7.0
 
 # The main workflows executed for Rover
 workflows:
@@ -101,12 +100,23 @@ commands:
           condition:
             equal: [ *ubuntu_gnu_executor, << parameters.platform >> ]
           steps:
+            - run: 
+                name: Put $NVM_DIR in $BASH_ENV
+                command: |
+                  echo 'export NVM_DIR="/opt/circleci/.nvm"' >> $BASH_ENV
+                  echo ' [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
             - run:
-                name: Uninstall Circle's borked nvm
-                command: rm -rf $NVM_DIR
-            - node/install:
-                node-version: << parameters.node_version >>
-                npm-version: << parameters.npm_version >>
+                name: Set node version
+                command: nvm use v<< parameters.node_version >>
+            - run:
+                name: Set npm version
+                command: npm i -g npm@<< parameters.npm_version >>
+            - run:
+                name: Assert Node.js version
+                command: test "$(node --version)" = "v${NODE_VERSION}"
+            - run:
+                name: Assert npm version
+                command: test "$(npm --version)" = "${NPM_VERSION}"
 
   install_rust_toolchain:
     parameters:
